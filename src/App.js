@@ -6,7 +6,7 @@ import Result from "./pages/Result";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/love_test">  {/* ✅ GitHub Pages에서 올바르게 라우팅하기 위해 basename 추가 */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/quiz" element={<Quiz />} />
