@@ -76,19 +76,28 @@ const questionData = [
 
 function Quiz() {
   const [answers, setAnswers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
   const navigate = useNavigate();
 
   const handleAnswer = (selectedTypes) => {
-    setAnswers((prevAnswers) => [...prevAnswers, selectedTypes[0]]); // 🔥 하나의 값만 추가!
-  
-    if (answers.length + 1 === questionData.length) { // ✅ answers.length + 1을 비교
-      navigate("/result", { state: { answers: [...answers, selectedTypes[0]] } });
+    if (answers.length + 1 === questionData.length) {
+      setIsLoading(true); // ✅ 로딩 화면 활성화
+
+      setTimeout(() => {
+        navigate("/result", { state: { answers: [...answers, selectedTypes[0]] } });
+      }, 2000); // 2초 후 결과 페이지 이동
+    } else {
+      setAnswers([...answers, selectedTypes[0]]);
     }
   };
 
   return (
     <div className="container">
-      {answers.length < questionData.length ? (
+      {isLoading ? ( // ✅ 로딩 중이면 로딩 화면 표시
+        <div className="loading-container">
+          <p>결과를 분석 중입니다... ⏳</p>
+        </div>
+      ) : answers.length < questionData.length ? (
         <div>
           <h2>{questionData[answers.length].question}</h2>
           <div className="button-container">

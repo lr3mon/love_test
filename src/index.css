@@ -22,3 +22,13 @@ button:hover {
   background-color: #ff6b6b;
   color: white;
 }
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6b6b;
+}
