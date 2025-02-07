@@ -79,9 +79,10 @@ function Quiz() {
   const navigate = useNavigate();
 
   const handleAnswer = (selectedTypes) => {
-    setAnswers([...answers, ...selectedTypes]);
-    if (answers.length === questionData.length - 1) {
-      navigate("/result", { state: { answers: [...answers, ...selectedTypes] } });
+    setAnswers((prevAnswers) => [...prevAnswers, selectedTypes[0]]); // 🔥 하나의 값만 추가!
+  
+    if (answers.length + 1 === questionData.length) { // ✅ answers.length + 1을 비교
+      navigate("/result", { state: { answers: [...answers, selectedTypes[0]] } });
     }
   };
 
