@@ -1,16 +1,16 @@
-import React from "react";
+// src/App.js
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Quiz from "./pages/Quiz";
-import Result from "./pages/Result";
+import TestList from "./components/TestList";
+import LoveQuiz from "./pages/LoveQuiz";
+import JobQuiz from "./pages/JobQuiz";
 
 function App() {
   return (
-    <Router basename="/love_test">  {/* ✅ GitHub Pages에서 올바르게 라우팅하기 위해 basename 추가 */}
+    <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/quiz" element={<Quiz />} />
-        <Route path="/result" element={<Result />} />
+        <Route path="/" element={<TestList />} />
+        <Route path="/tests/love" element={<LoveQuiz />} />
+        <Route path="/tests/job" element={<JobQuiz />} />
       </Routes>
     </Router>
   );
