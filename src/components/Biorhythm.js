@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import "../styles/Biorhythm.css"; // 스타일 추가
 
+// ✅ 바이오리듬 계산 함수
 const calculateBiorhythm = (birthDate, targetDate, range = 3) => {
   const birthTime = new Date(birthDate).getTime();
   const targetTime = new Date(targetDate).getTime();
@@ -11,31 +12,21 @@ const calculateBiorhythm = (birthDate, targetDate, range = 3) => {
   const days = Array.from({ length: range * 2 + 1 }, (_, i) => new Date(targetTime + (i - range) * 86400000));
   
   return {
-    days: days.map((d) => `${d.getMonth() + 1}월 ${d.getDate()}일`), 
-    physical: days.map((d, i) => Math.sin((2 * Math.PI * (diffDays + i - range)) / 23) * 100),
+    days: days.map((d) => `${d.getMonth() + 1}월 ${d.getDate()}일`), // ✅ X축을 "M월 D일" 형식으로 변환
+    physical: days.map((d, i) => Math.sin((2 * Math.PI * (diffDays + i - range)) / 23) * 100), // ✅ Y축 % 변환
     emotional: days.map((d, i) => Math.sin((2 * Math.PI * (diffDays + i - range)) / 28) * 100),
     intellectual: days.map((d, i) => Math.sin((2 * Math.PI * (diffDays + i - range)) / 33) * 100),
   };
 };
 
 function Biorhythm() {
-  const [birthDate, setBirthDate] = useState(localStorage.getItem("birthDate") || "");
-  const [targetDate, setTargetDate] = useState(localStorage.getItem("targetDate") || new Date().toISOString().split("T")[0]);
+  const [birthDate, setBirthDate] = useState("");
+  const [targetDate, setTargetDate] = useState(new Date().toISOString().split("T")[0]);
   const [biorhythmData, setBiorhythmData] = useState(null);
-
-  useEffect(() => {
-    if (birthDate) {
-      setBiorhythmData(calculateBiorhythm(birthDate, targetDate));
-    }
-  }, [birthDate, targetDate]);
 
   const handleCalculate = () => {
     if (!birthDate) return;
     setBiorhythmData(calculateBiorhythm(birthDate, targetDate));
-    
-    // ✅ 입력한 값 LocalStorage에 저장
-    localStorage.setItem("birthDate", birthDate);
-    localStorage.setItem("targetDate", targetDate);
   };
 
   return (
