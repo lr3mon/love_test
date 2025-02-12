@@ -6,7 +6,7 @@ import Result from "./pages/Result";
 
 function App() {
   return (
-    <Router basename="/love_test">
+    <Router>
       <Routes>
         <Route path="/" element={<TestList />} />
         <Route path="/tests/love" element={<LoveQuiz />} />
