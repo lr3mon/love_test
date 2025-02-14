@@ -5,7 +5,7 @@ function SajuCalculator() {
     const [birthDate, setBirthDate] = useState("");
     const [birthHour, setBirthHour] = useState("12"); // 기본값: 정오 (오시)
     const [sajuResult, setSajuResult] = useState(null);
-    const API_URL = process.env.REACT_APP_API_URL || "/.netlify/functions/saju";
+    const API_BASE_URL = "https://cors-anywhere.herokuapp.com/https://apis.data.go.kr/B090041/openapi/service/LunCalService/getLunCal";
 
     const fetchSajuData = async () => {
         if (!birthDate) {
@@ -20,29 +20,27 @@ function SajuCalculator() {
         }
     
         try {
-            const response = await fetch(`${API_URL}?solYear=${year}&solMonth=${month}&solDay=${day}`);
+            const response = await fetch(`${API_BASE_URL}?solYear=${year}&solMonth=${month}&solDay=${day}&ServiceKey=${process.env.REACT_APP_API_KEY}&_type=json`, {
+                headers: {
+                    "Origin": "https://your-deployed-site.com" // 배포된 도메인
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
             const data = await response.json();
-    
-            console.log("✅ API 응답 데이터:", JSON.stringify(data, null, 2)); // API 응답 확인
-    
-            // ❌ 기존 `data.response.body.items.item` 접근 방식 제거
+            console.log("✅ API 응답 데이터:", data);
+            
             if (!data.solarDate || !data.lunarDate || !data.tiangan || !data.dizhi || !data.element) {
                 console.error("❌ API 응답에서 필수 데이터 누락:", data);
                 return;
             }
     
-            console.log("✅ 추출된 API 데이터:", JSON.stringify(data, null, 2)); // 추출된 데이터 확인
-    
-            const processedData = parseSajuData(data, birthHour);
-            if (!processedData) {
-                console.error("❌ 사주 데이터를 가공할 수 없음");
-                return;
-            }
-    
-            console.log("✅ 최종 가공된 사주 데이터:", JSON.stringify(processedData, null, 2));
-            setSajuResult(processedData);
+            setSajuResult(parseSajuData(data, birthHour));
         } catch (error) {
-            console.error("❌ API 요청 오류:", error);
+            console.error("❌ 사주 API 요청 오류:", error);
         }
     };
 
