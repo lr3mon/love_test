@@ -5,37 +5,26 @@ function SajuCalculator() {
     const [birthDate, setBirthDate] = useState("");
     const [birthHour, setBirthHour] = useState("0"); // 출생 시간 선택
     const [sajuResult, setSajuResult] = useState(null);
-    const API_KEY = "YOUR_API_KEY"; // ✅ 발급받은 API 키 입력
+    const API_URL = process.env.REACT_APP_API_URL || "/.netlify/functions/saju";
 
     const fetchSajuData = async () => {
         if (!birthDate) return;
-
         const [year, month, day] = birthDate.split("-");
-
-        // ✅ API 요청 URL 생성
-        const apiUrl = `https://apis.data.go.kr/B090041/openapi/service/LunCalService/getLunCal?solYear=${year}&solMonth=${month}&solDay=${day}&ServiceKey=${'72o0rmgeQ%2BJGGu6qar4ev3yZt6Kt%2Bjb6AQxn1urD%2BQdGNkXupiWs7ZJaGlpGMI%2BjYUSeCOBsTQD5Dw%2FuJgyPqA%3D%3D'}&_type=json`;
-
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(`${API_URL}?solYear=${year}&solMonth=${month}&solDay=${day}`);
             const data = await response.json();
-
-            if (data.response.body.items) {
+            if (data.response && data.response.body && data.response.body.items) {
                 const sajuData = data.response.body.items.item;
-                const lunarYear = sajuData.lunYear;  // 음력 연도
-                const lunarMonth = sajuData.lunMonth; // 음력 월
-                const lunarDay = sajuData.lunDay;  // 음력 일
-
-                // ✅ 천간·지지 및 오행 정보 저장
                 setSajuResult({
                     solarDate: `${year}-${month}-${day}`, 
-                    lunarDate: `${lunarYear}-${lunarMonth}-${lunarDay}`,
+                    lunarDate: `${sajuData.lunYear}-${sajuData.lunMonth}-${sajuData.lunDay}`,
                     tiangan: sajuData.tiangan,
                     dizhi: sajuData.dizhi,
-                    element: sajuData.element // 오행 정보
+                    element: sajuData.element
                 });
             }
         } catch (error) {
-            console.error("사주 API 요청 오류:", error);
+            console.error("API 요청 오류:", error);
         }
     };
 
