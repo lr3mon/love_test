@@ -5,7 +5,7 @@ function SajuCalculator() {
     const [birthDate, setBirthDate] = useState("");
     const [birthHour, setBirthHour] = useState("12"); // 기본값: 정오 (오시)
     const [sajuResult, setSajuResult] = useState(null);
-    const API_BASE_URL = "https://cors-anywhere.herokuapp.com/https://apis.data.go.kr/B090041/openapi/service/LunCalService/getLunCal";
+    const API_BASE_URL = "https://your-netlify-site.netlify.app/.netlify/functions/saju";
 
     const fetchSajuData = async () => {
         if (!birthDate) {
