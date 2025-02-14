@@ -53,6 +53,7 @@ function Biorhythm() {
                   borderColor: "red",
                   backgroundColor: "rgba(255, 0, 0, 0.2)",
                   fill: false,
+                  pointStyle: "circle", // ✅ 범례 아이콘을 원(circle)으로 변경
                 },
                 {
                   label: "💖 감정 리듬",
@@ -60,6 +61,7 @@ function Biorhythm() {
                   borderColor: "blue",
                   backgroundColor: "rgba(0, 0, 255, 0.2)",
                   fill: false,
+                  pointStyle: "circle", // ✅ 범례 아이콘을 원(circle)으로 변경
                 },
                 {
                   label: "🧠 지적 리듬",
@@ -67,10 +69,19 @@ function Biorhythm() {
                   borderColor: "green",
                   backgroundColor: "rgba(0, 255, 0, 0.2)",
                   fill: false,
+                  pointStyle: "circle", // ✅ 범례 아이콘을 원(circle)으로 변경
                 },
               ],
             }}
             options={{
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true, // ✅ 범례를 원(circle)으로 변경
+                            boxWidth: 10, // ✅ 아이콘 크기 조정 (더 작은 원)
+                        },
+                    },
+                }, 
               scales: {
                 y: {
                   min: -100,

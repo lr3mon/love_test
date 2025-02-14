@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import Biorhythm from "./Biorhythm"; // ✅ 바이오리듬 추가
+import Biorhythm from "./Biorhythm"; // ✅ 바이오리듬 계산기 추가
+import SajuCalculator from "./SajuCalculator"; // ✅ 사주 원국 계산기 추가
 import "../styles/TestList.css";
 
 function TestList() {
@@ -12,7 +13,10 @@ function TestList() {
         <Link to="/tests/job" className="test-card">💼 직업 성격 테스트</Link>
       </div>
 
-      {/* ✅ 바이오리듬 컴포넌트를 아래로 이동 */}
+      {/* ✅ 사주 원국 계산기 추가 */}
+      <SajuCalculator />
+
+      {/* ✅ 바이오리듬 계산기도 그대로 유지 */}
       <Biorhythm />
     </div>
   );

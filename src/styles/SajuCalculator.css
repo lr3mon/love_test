@@ -1,0 +1,77 @@
+.saju-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 540px;
+    margin: 30px auto;
+    box-sizing: border-box;
+}
+
+.saju-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.saju-inputs input,
+.saju-inputs select,
+.saju-inputs button {
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #e91e63; /* ✅ 기존 스타일과 동일한 색상 */
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.saju-inputs button {
+    background-color: #e91e63;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.saju-inputs button:hover {
+    background-color: #d81b60;
+}
+
+/* ✅ 사주 결과 테이블 */
+.saju-result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fce4ec; /* ✅ 기존 스타일과 동일한 연한 핑크 배경 */
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.saju-result table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.saju-result th, .saju-result td {
+    padding: 10px;
+    border: 1px solid #f8bbd0;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* ✅ 천간 스타일 */
+.saju-tiangan td {
+    background: #ffebee; /* 연한 레드 */
+    color: #b71c1c; /* 다크 레드 */
+}
+
+/* ✅ 지지 스타일 */
+.saju-dizhi td {
+    background: #e3f2fd; /* 연한 블루 */
+    color: #0d47a1; /* 다크 블루 */
+}
