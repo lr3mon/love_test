@@ -1,128 +1,142 @@
 import React, { useState } from "react";
-import "../styles/SajuCalculator.css";
+import "../styles/SajuCalculator.css"; // ✅ 스타일 유지
+
+// 시주(시간 기둥) 계산을 위한 데이터
+const hourZodiac = [
+    { range: [23, 1], dizhi: "자" },
+    { range: [1, 3], dizhi: "축" },
+    { range: [3, 5], dizhi: "인" },
+    { range: [5, 7], dizhi: "묘" },
+    { range: [7, 9], dizhi: "진" },
+    { range: [9, 11], dizhi: "사" },
+    { range: [11, 13], dizhi: "오" },
+    { range: [13, 15], dizhi: "미" },
+    { range: [15, 17], dizhi: "신" },
+    { range: [17, 19], dizhi: "유" },
+    { range: [19, 21], dizhi: "술" },
+    { range: [21, 23], dizhi: "해" },
+];
+
+// 천간 리스트 (한글 적용)
+const tianganCycle = ["갑", "을", "병", "정", "무", "기", "경", "신", "임", "계"];
+
+// 시주의 천간을 정확히 계산하는 함수
+const calculateHourPillar = (yearTiangan, birthHour) => {
+    if (birthHour === "") return { tiangan: "-", dizhi: "-" };
+
+    // 시지(시간의 지지) 찾기
+    const dizhiData = hourZodiac.find(({ range }) => 
+        (birthHour >= range[0] && birthHour < range[1]) || (range[0] === 23 && birthHour === 0)
+    );
+    const dizhi = dizhiData?.dizhi || "-";
+
+    // 연간을 기반으로 시주의 천간 계산
+    const yearTianganIndex = tianganCycle.indexOf(yearTiangan);
+    if (yearTianganIndex === -1) return { tiangan: "-", dizhi }; // 연간 정보가 없으면 "-" 반환
+
+    // 시주의 천간 공식: (연간 인덱스 * 2 + 시지 인덱스) % 10
+    const dizhiIndex = hourZodiac.findIndex(({ dizhi: d }) => d === dizhi);
+    const tiangan = tianganCycle[(yearTianganIndex * 2 + dizhiIndex) % 10];
+
+    return { tiangan, dizhi };
+};
 
 function SajuCalculator() {
     const [birthDate, setBirthDate] = useState("");
-    const [birthHour, setBirthHour] = useState("12"); // 기본값: 정오 (오시)
+    const [birthHour, setBirthHour] = useState(""); // ✅ 출생 시간 추가
     const [sajuResult, setSajuResult] = useState(null);
-    const API_BASE_URL = "https://your-netlify-site.netlify.app/.netlify/functions/saju";
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/saju";
 
     const fetchSajuData = async () => {
+        console.log("✅ [DEBUG] API 요청 URL:", API_BASE_URL);    
+        console.log("✅ [DEBUG] 현재 birthDate 값:", birthDate);
+        console.log("✅ [DEBUG] 현재 birthHour 값:", birthHour);
+
         if (!birthDate) {
-            console.error("Error: birthDate is not defined");
+            setError("생년월일을 입력하세요.");
             return;
         }
-    
+
         const [year, month, day] = birthDate.split("-");
+        console.log(`✅ [DEBUG] Parsed Date: ${year}-${month}-${day}`);
+
         if (!year || !month || !day) {
-            console.error("Error: Invalid birthDate format", birthDate);
+            setError("유효한 날짜를 입력하세요.");
             return;
         }
-    
+
+        setLoading(true);
+        setError(null);
+
         try {
-            const response = await fetch(`${API_BASE_URL}?solYear=${year}&solMonth=${month}&solDay=${day}&ServiceKey=${process.env.REACT_APP_API_KEY}&_type=json`, {
-                headers: {
-                    "Origin": "https://your-deployed-site.com" // 배포된 도메인
-                }
-            });
-    
+            const apiUrl = `${API_BASE_URL}?solYear=${year}&solMonth=${month}&solDay=${day}&birthHour=${birthHour || 0}`;
+            console.log(`🔍 API 요청 URL: ${apiUrl}`);
+
+            const response = await fetch(apiUrl);
+
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`❌ HTTP error! Status: ${response.status}`);
             }
-    
+
             const data = await response.json();
-            console.log("✅ API 응답 데이터:", data);
-            
-            if (!data.solarDate || !data.lunarDate || !data.tiangan || !data.dizhi || !data.element) {
-                console.error("❌ API 응답에서 필수 데이터 누락:", data);
+            console.log("✅ [DEBUG] API 응답 데이터:", data);
+
+            if (!data.solarDate || !data.lunarDate || !data.saju) {
+                setError("사주 데이터를 불러올 수 없습니다.");
                 return;
             }
-    
-            setSajuResult(parseSajuData(data, birthHour));
+
+            console.log("✅ [DEBUG] 사주 데이터 설정 완료");
+            setSajuResult(data);
         } catch (error) {
             console.error("❌ 사주 API 요청 오류:", error);
+            setError("API 요청에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const parseSajuData = (data, hour) => {
-        console.log("✅ API에서 받은 원본 데이터:", JSON.stringify(data, null, 2));
-    
-        if (!data.tiangan || !data.dizhi || !data.element) {
-            console.error("❌ 필수 데이터 없음:", data);
-            return null;
-        }
-    
-        // 🔥 한자 제거 및 천간/지지 분리 함수
-        const extractTianganDizhi = (value) => {
-            if (!value) return { tiangan: "-", dizhi: "-" };
-            const cleanValue = value.replace(/\(.*?\)/g, ""); // 괄호 안 한자 제거
-            return { tiangan: cleanValue.charAt(0), dizhi: cleanValue.charAt(1) };
-        };
-    
-        // ✅ 새로운 API 구조에 맞게 데이터 매핑
-        const saju = {
-            year: extractTianganDizhi(data.tiangan),  // 연주 (경진)
-            month: extractTianganDizhi(data.dizhi),  // 월주 (정해)
-            day: extractTianganDizhi(data.element),  // 일주 (신유)
-        };
-    
-        console.log("✅ 가공된 사주 데이터:", JSON.stringify(saju, null, 2));
-    
-        // **🕐 시주 계산 추가**
-        const hourToDizhi = [
-            "자", "자", "축", "축", "인", "인", "묘", "묘", "진", "진", "사", "사",
-            "오", "오", "미", "미", "신", "신", "유", "유", "술", "술", "해", "해"
-        ];
-        const hourDizhi = hourToDizhi[parseInt(hour, 10)] || "-";
-    
-        const tianganOrder = ["갑", "을", "병", "정", "무", "기", "경", "신", "임", "계"];
-        const dizhiOrder = ["자", "축", "인", "묘", "진", "사", "오", "미", "신", "유", "술", "해"];
-        const tianganIndex = tianganOrder.indexOf(saju.day.tiangan);
-    
-        if (tianganIndex === -1) {
-            console.error("❌ 일간 오류: 유효하지 않음", saju.day.tiangan);
-            return null;
-        }
-    
-        const hourTiangan = tianganOrder[(tianganIndex * 2 + dizhiOrder.indexOf(hourDizhi)) % 10];
-    
-        console.log(`✅ 시주 계산 결과: 천간=${hourTiangan}, 지지=${hourDizhi}`);
-        saju.hour = { tiangan: hourTiangan, dizhi: hourDizhi };
-    
-        console.log("✅ 최종 가공된 사주 데이터:", JSON.stringify(saju, null, 2));
-    
-        return {
-            saju,
-            solarDate: data.solarDate,
-            lunarDate: data.lunarDate,
-            element: "오행 분석 필요" // 추가할 오행 분석 로직
-        };
-    };
+    // 시주 계산 (연간 정보가 있을 경우만)
+    const calculatedHourPillar = sajuResult ? calculateHourPillar(sajuResult.saju.year.tiangan, birthHour || 0) : { tiangan: "-", dizhi: "-" };
 
     return (
         <div className="saju-container">
             <h2>🔮 사주 원국 계산기</h2>
+
             <div className="saju-inputs">
                 <label>생년월일 (양력):</label>
-                <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+                <input
+                    type="date"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
+                />
 
                 <label>출생 시간:</label>
                 <select value={birthHour} onChange={(e) => setBirthHour(e.target.value)}>
+                    <option value="">모름 (자동 계산)</option>
                     {Array.from({ length: 24 }, (_, i) => (
                         <option key={i} value={i}>{i}시</option>
                     ))}
                 </select>
 
-                <button onClick={fetchSajuData}>계산하기</button>
+                <button onClick={fetchSajuData} disabled={loading}>
+                    {loading ? "계산 중..." : "계산하기"}
+                </button>
             </div>
 
-            {sajuResult ? (
+            {error && <p className="error-message">❌ {error}</p>}
+
+            {sajuResult && (
                 <div className="saju-result">
                     <h3>📝 사주 원국</h3>
                     <p>📅 양력 날짜: {sajuResult.solarDate}</p>
                     <p>🌙 음력 날짜: {sajuResult.lunarDate}</p>
+                    
 
-                    <table>
+                    <table className="saju-table">
                         <thead>
                             <tr>
                                 <th>시주</th>
@@ -133,13 +147,13 @@ function SajuCalculator() {
                         </thead>
                         <tbody>
                             <tr className="saju-tiangan">
-                                <td>{sajuResult.saju.hour?.tiangan || "-"}</td>
+                                <td>{calculatedHourPillar.tiangan || "-"}</td>
                                 <td>{sajuResult.saju.day?.tiangan || "-"}</td>
                                 <td>{sajuResult.saju.month?.tiangan || "-"}</td>
                                 <td>{sajuResult.saju.year?.tiangan || "-"}</td>
                             </tr>
                             <tr className="saju-dizhi">
-                                <td>{sajuResult.saju.hour?.dizhi || "-"}</td>
+                                <td>{calculatedHourPillar.dizhi || "-"}</td>
                                 <td>{sajuResult.saju.day?.dizhi || "-"}</td>
                                 <td>{sajuResult.saju.month?.dizhi || "-"}</td>
                                 <td>{sajuResult.saju.year?.dizhi || "-"}</td>
@@ -147,8 +161,6 @@ function SajuCalculator() {
                         </tbody>
                     </table>
                 </div>
-            ) : (
-                <p className="error-message">❌ 사주 데이터를 불러올 수 없습니다. 콘솔 로그를 확인하세요.</p>
             )}
         </div>
     );

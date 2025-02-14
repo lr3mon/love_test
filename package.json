@@ -6,7 +6,7 @@
     "scripts": {
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
-        "start": "export NODE_OPTIONS=--openssl-legacy-provider && concurrently \"npx react-scripts start\" \"cross-env PORT=5001 node backend/proxy-server.js\"",
+        "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"

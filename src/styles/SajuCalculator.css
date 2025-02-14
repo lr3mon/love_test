@@ -1,17 +1,20 @@
+/* 📌 전체 컨테이너 스타일 */
 .saju-container {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     text-align: center;
     background: white;
-    padding: 20px;
-    border-radius: 12px;
+    padding: 15px; /* ✅ 테스트 카드와 동일한 패딩 */
+    border-radius: 12px; /* ✅ 테스트 카드와 동일한 모서리 둥글기 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
     width: 100%;
-    max-width: 540px;
+    max-width: 540px; /* ✅ 테스트 카드들과 동일한 너비 */
     margin: 30px auto;
-    box-sizing: border-box;
+    box-sizing: border-box; /* ✅ padding 포함한 너비 계산 */
+    font-size: clamp(14px, 1.8vw, 18px); /* ✅ 화면 크기에 따라 유동적으로 변경 */
 }
 
 /* ✅ 마우스 호버 시 부드럽게 확대 */
@@ -19,6 +22,7 @@
     transform: translateY(-5px);
 }
 
+/* 📌 입력 필드 및 버튼 정렬 */
 .saju-inputs {
     display: flex;
     flex-direction: column;
@@ -26,58 +30,91 @@
     margin-bottom: 20px;
 }
 
-.saju-inputs input,
-.saju-inputs select,
-.saju-inputs button {
-    padding: 12px;
-    border-radius: 8px;
-    border: 2px solid #e91e63; /* ✅ 기존 스타일과 동일한 색상 */
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.saju-inputs button {
-    background-color: #e91e63;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.saju-inputs button:hover {
-    background-color: #d81b60;
-}
-
-/* ✅ 사주 결과 테이블 */
-.saju-result {
-    margin-top: 20px;
-    padding: 15px;
-    background: #fce4ec; /* ✅ 기존 스타일과 동일한 연한 핑크 배경 */
-    border-radius: 10px;
+/* 📌 날짜 입력 필드 및 선택창 스타일 */
+input[type="date"], select {
     width: 100%;
-    text-align: center;
-}
-
-.saju-result table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.saju-result th, .saju-result td {
+    max-width: 380px;
+    margin: 0 auto;
     padding: 10px;
-    border: 1px solid #f8bbd0;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #d1d1d1;
+    background: #fafafa;
     text-align: center;
+    transition: all 0.2s ease-in-out;
+}
+
+input[type="date"]:focus, select:focus {
+    border-color: #3a8d42;
+    outline: none;
+}
+
+/* 📌 버튼 스타일 */
+button {
+    width: 100%;
+    max-width: 380px;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #3a8d42;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: #327939;
+}
+
+button:disabled {
+    background-color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+/* 📌 에러 메시지 스타일 */
+.error-message {
+    color: #d9534f;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+
+/* 📌 사주 원국 테이블 스타일 */
+.saju-table {
+    width: 100%;
+    max-width: 4500px;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+/* 📌 테이블 헤더 스타일 */
+.saju-table th {
+    background-color: #3a8d42;
+    color: white;
+    font-size: 15px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* 📌 테이블 셀 스타일 */
+.saju-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 15px;
+}
+
+/* 📌 천간 행 스타일 */
+.saju-tiangan {
+    background-color: #e8f5e9;
     font-weight: bold;
 }
 
-/* ✅ 천간 스타일 */
-.saju-tiangan td {
-    background: #ffebee; /* 연한 레드 */
-    color: #b71c1c; /* 다크 레드 */
+/* 📌 지지 행 스타일 */
+.saju-dizhi {
+    background-color: #fef4e9;
+    font-weight: bold;
 }
 
-/* ✅ 지지 스타일 */
-.saju-dizhi td {
-    background: #e3f2fd; /* 연한 블루 */
-    color: #0d47a1; /* 다크 블루 */
-}
