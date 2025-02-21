@@ -48,7 +48,7 @@ function SajuCalculator() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/saju";
+    const API_BASE_URL = process.env.REACT_APP_API_URL || "https://saju-4asx6qoih-park-sangjoons-projects.vercel.app/api/saju";
 
     const fetchSajuData = async () => {
         console.log("✅ [DEBUG] API 요청 URL:", API_BASE_URL);    
